@@ -1,4 +1,14 @@
 package models;
+import dao.DAO;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 
 public class ResultModel {
     private String racerAbr;
@@ -8,6 +18,11 @@ public class ResultModel {
     private String startTime;
     private String endDate;
     private String endTime;
+    private LocalDateTime startData;
+    private LocalDateTime endData;
+    private long racerTimeDuration;
+    private String racerTime;
+
 
     public String getRacerAbbreviation() {
         return racerAbr;
@@ -62,8 +77,31 @@ public class ResultModel {
     public void setEndDate(String date) {
         this.endDate = date;
     }
+    public void setTimeStartResult(String startTime, String startDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SSS");
+        String text = startDate + " " + startTime;
+        this.startData = LocalDateTime.parse(text, formatter);
+    }
+    public void setTimeEndResult(String endTime, String endDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SSS");
+        String text = endDate + " " + endTime;
+        this.endData = LocalDateTime.parse(text, formatter);
+    }
 
+    public void setRaceResult() {
+        this.racerTimeDuration = Duration.between(this.startData, this.endData).toMillis();
+    }
+    public long getRaceResult() {
+        return racerTimeDuration;
+    }
+    @Override
+    public String toString() {
 
-
-
+        return   '\n' + racerName + "   |" + racerTeam + "    |" +
+        String.format("%d:%d.%d",
+                TimeUnit.MILLISECONDS.toMinutes(racerTimeDuration),
+                TimeUnit.MILLISECONDS.toSeconds(racerTimeDuration)-TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(racerTimeDuration)),
+                racerTimeDuration-TimeUnit.MINUTES.toMillis(TimeUnit.MILLISECONDS.toMinutes(racerTimeDuration))-TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(racerTimeDuration)-TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(racerTimeDuration)))
+        );
+    }
 }

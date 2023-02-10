@@ -2,6 +2,7 @@ package dao;
 
 import models.RacerModel;
 import models.TimeStartModel;
+import models.TimeEndModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,15 +11,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DAO {
-    private static InputStream readFile(String fileName){
+    private InputStream readFile(String fileName){
         ClassLoader classLoader = DAO.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(fileName);
         return inputStream;
     }
-    public static List<RacerModel> getRacersList() {
+    public List<RacerModel> getRacersList() {
         List<RacerModel> racersList;
         try
                 (InputStream inputStream = readFile("abbreviations.txt")){
@@ -40,7 +40,7 @@ public class DAO {
         return racersList;
     }
 
-    public static List<TimeStartModel> getStartTime() {
+    public List<TimeStartModel> getStartTime() {
         List<TimeStartModel> listOfStartTime;
         try
                 (InputStream inputStream = readFile("start.log")) {
@@ -60,6 +60,27 @@ public class DAO {
             throw new RuntimeException(e);
         }
         return listOfStartTime;
+    }
+    public List<TimeEndModel> getEndTime() {
+        List<TimeEndModel> listOfEndTime;
+        try
+                (InputStream inputStream = readFile("end.log")) {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            listOfEndTime =
+                    bufferedReader.lines()
+                            .map(line -> line.split("_"))
+                            .map(str -> {
+                                TimeEndModel time = new TimeEndModel();
+                                time.setAbbreviation(str[0].substring(0,3));
+                                time.setEndTime(str[1]);
+                                time.setEndDate(str[0].substring(3));
+                                return time;
+                            }).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return listOfEndTime;
     }
 }
 
