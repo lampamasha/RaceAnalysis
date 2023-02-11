@@ -10,8 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class Service {
+    private int i =0;
     private List<ResultModel> setResultRacers() {
         List<RacerModel> racersList = new DAO().getRacersList();
         return racersList.stream()
@@ -40,6 +40,10 @@ public class Service {
         List<ResultModel> racers = new Service().fillInResultModel();
         return racers.stream()
                 .sorted(Comparator.comparingLong(ResultModel::getRaceResult))
+                .peek(str->{
+                    ++i;
+                    str.setRacerNum(Integer.toString(i));
+                })
                 .toList();
     }
     private String combineRacerAndStartTime(ResultModel racerRes){
