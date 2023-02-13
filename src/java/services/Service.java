@@ -12,6 +12,16 @@ import java.util.stream.Collectors;
 
 public class Service {
     private int i =0;
+    public List<ResultModel> getRaceFinishListLong(){
+        List<ResultModel> racers = new Service().fillInResultModel();
+        return racers.stream()
+                .sorted(Comparator.comparingLong(ResultModel::getRaceResult))
+                .peek(str->{
+                    ++i;
+                    str.setRacerNum(Integer.toString(i));
+                })
+                .toList();
+    }
     private List<ResultModel> setResultRacers() {
         List<RacerModel> racersList = new DAO().getRacersList();
         return racersList.stream()
@@ -35,16 +45,6 @@ public class Service {
                     str.setTimeEndResult(str.getEndTime(), str.getEndDate());
                     str.setRaceResult();
         }).toList();
-    }
-    public List<ResultModel> getRaceFinishListLong(){
-        List<ResultModel> racers = new Service().fillInResultModel();
-        return racers.stream()
-                .sorted(Comparator.comparingLong(ResultModel::getRaceResult))
-                .peek(str->{
-                    ++i;
-                    str.setRacerNum(Integer.toString(i));
-                })
-                .toList();
     }
     private String combineRacerAndStartTime(ResultModel racerRes){
         List<TimeStartModel> timeStartList = new DAO().getStartTime();
